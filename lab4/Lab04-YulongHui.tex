@@ -1,0 +1,281 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage{ctex}
+\usepackage{amsmath,amscd,amsbsy,amssymb,latexsym,url,bm,amsthm}
+\usepackage{epsfig,graphicx,subfigure}
+\usepackage{enumitem,balance}
+\usepackage{wrapfig}
+\usepackage{mathrsfs,euscript}
+\usepackage[usenames]{xcolor}
+\usepackage{hyperref}
+\usepackage[vlined,ruled,linesnumbered]{algorithm2e}
+\hypersetup{colorlinks=true,linkcolor=black}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{exercise}{Exercise}
+\newtheorem*{solution}{Solution}
+\newtheorem{definition}{Definition}
+\theoremstyle{definition}
+
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+
+\newcommand{\postscript}[2]
+ {\setlength{\epsfxsize}{#2\hsize}
+  \centerline{\epsfbox{#1}}}
+
+\renewcommand{\baselinestretch}{1.0}
+
+\setlength{\oddsidemargin}{-0.365in}
+\setlength{\evensidemargin}{-0.365in}
+\setlength{\topmargin}{-0.3in}
+\setlength{\headheight}{0in}
+\setlength{\headsep}{0in}
+\setlength{\textheight}{10.1in}
+\setlength{\textwidth}{7in}
+\makeatletter \renewenvironment{proof}[1][Proof] {\par\pushQED{\qed}\normalfont\topsep6\p@\@plus6\p@\relax\trivlist\item[\hskip\labelsep\bfseries#1\@addpunct{.}]\ignorespaces}{\popQED\endtrivlist\@endpefalse} \makeatother
+\makeatletter
+\renewenvironment{solution}[1][Solution] {\par\pushQED{\qed}\normalfont\topsep6\p@\@plus6\p@\relax\trivlist\item[\hskip\labelsep\bfseries#1\@addpunct{.}]\ignorespaces}{\popQED\endtrivlist\@endpefalse} \makeatother
+
+\begin{document}
+
+\noindent
+
+%========================================================================
+\noindent\framebox[\linewidth]{\shortstack[c]{
+\Large{\textbf{Lab04-Matroid}}\vspace{1mm}\\
+CS214-Algorithm and Complexity, Xiaofeng Gao, Spring 2020.}}
+\begin{center}
+\footnotesize{\color{red}$*$ If there is any problem, please contact TA Yiming Liu.}
+
+% Please write down your name, student id and email.
+\footnotesize{\color{blue}$*$ Name: Yulong Hui  \quad Student ID:518030910059  \quad Email: qinchuanhuiyulong@sjtu.edu.cn}
+\end{center}
+
+\begin{enumerate}
+\item Give a directed graph $G=(V,E)$ whose edges have integer weights. Let $w(e)$ be the weight of edge $e\in E$. We are also given a constraint $f(u)\geq 0$ on the out-degree of each node $u\in V$. Our goal is to find a subset of edges with maximal weight, whose out-degree at any node is no greater than the constraint.
+	\begin{enumerate}
+	    \item Please define independent sets and prove that they form a matroid.
+	    \item Write an optimal greedy algorithm based on Greedy-MAX in the form of \emph{pseudo code}.
+	    \item Analyze the time complexity of your algorithm.
+	\end{enumerate}
+
+\begin{solution}
+	~\\
+	(a) Assume that $ I$ is a subset of $E$, and  \textbf{C} is the collection set of $I$. If the out-degree at any node in $I$ is no greater than the constraint, then we call the $I$ set is an independent set and  $(S,\textbf{C})$ is an independent system.
+	
+	Prove. If $A\subseteq B$ and $B\in \textbf{C}$, then the node in $A$ must have less out-degree than that in $B$. So, it is hereditary.
+	
+	Then if $F,D \in \textbf{C}$ and $|F|<|D|$, there must be at least one node (assume it is $n$) satisfying that the out-degree of $n$ in $F$ is less than that in $D$. Then we can add a edge $e$ ($e\in D$ but $e\notin F$) whose source is $n$ to set $F$. And now in $F\cup \{ e\}$, the out-degree of $n$ is not greater than that in $D$, so it is still not greater than the constaint, and set $F$ is still in \textbf{C}. 
+	
+	Therefore, $(S,\textbf{C})$ is a matroid.
+	
+	(b)The detailed implemention will be explained in (c).	
+	
+	\begin{minipage}[t]{0.95\textwidth}
+		\begin{algorithm}[H]
+			\KwIn{The graph $G=(V,E)$, $w(e)$ and $f(u) $}
+			\KwOut{A correct subset of $E$}
+			
+			\BlankLine
+			\caption{Greedy-MAX1}\label{Alg_Quick}
+			
+		    Sort the elements in $E$ by weight, so that $w(e_1)>w(e_2)>\cdots>w(e_n) $ \;
+			
+		    $A\leftarrow \emptyset$\;
+			\For{$i \leftarrow 1$ \KwTo $n$}{
+				\If{$A\cup{e_i}$ \text{satisfies the constraint on out-degree}}{
+					$A=A\cup{e_i} $
+				}
+			}
+			
+			return $A$\;
+		\end{algorithm}
+	\end{minipage}
+	
+	(c) First, the time complexity of the sorting process is $O(E\log E)$. If we assume the time complexity from line4 to line5 is $f(E,V)$, the total complexity should be $O(E\log E +Ef(E,V)). $Then analyze $f(E,V)$.
+	
+	 To decrease the time complexity and finish the algorithm correctly, we may use some extra space. 
+	 We can create a link-list to store the edges and an array of V elements to record the current out-degree of every node. Then, every comparing betwenn the current out-degree and constraint (line4) will take $O(1)$. Increasing the out-degree and adding the edge to the link-list(line5) will also take $O(1)$. So the complexity $f(E,V)$ can be $O(1)$, then the total time complexity is $O(E\log E)$
+	
+\end{solution}
+
+
+
+
+
+
+\item Let $X$, $Y$, $Z$ be three sets. We say two triples $\left(x_{1}, y_{1}, z_{1}\right)$ and $\left(x_{2}, y_{2}, z_{2}\right)$ in $X \times Y \times Z$ are \textit{disjoint} if $x_{1} \neq x_{2}$, $y_{1} \neq y_{2},$ and $z_{1} \neq z_{2}$. Consider the following problem:
+    
+    \begin{definition}[MAX-3DM] 
+        Given three disjoint sets $X$, $Y$, $Z$ and a nonnegative weight function $c(\cdot)$ on all triples in $X \times Y \times Z$, \textbf{Maximum 3-Dimensional Matching} (MAX-3DM) is to find a collection $\mathcal{F}$ of disjoint triples with maximum total weight.
+    \end{definition}
+
+    \begin{enumerate}
+    	\item Let $D = X \times Y \times Z$. Define independent sets for MAX-3DM.
+    	\item Write a greedy algorithm based on Greedy-MAX in the form of \emph{pseudo code}. \label{Item-Greedy}
+    	\item Give a counterexample to show that your Greedy-MAX algorithm in Q.~\ref{Item-Greedy} is not optimal.
+    	\item Show that: $\max\limits_{F \subseteq D} \frac{v(F)}{u(F)} \leq 3$. {\color{blue}(Hint: you may need Theorem~\ref{Thm-Intersect} for this subquestion.)} 
+    \end{enumerate}
+    \begin{theorem} \label{Thm-Intersect}
+        Suppose an independent system $(E, \mathcal{I})$ is the intersection of $k$ matroids $\left(E, \mathcal{I}_{i}\right)$, $1 \leq i \leq k$; that is, $\mathcal{I}=\bigcap_{i=1}^{k} \mathcal{I}_{i}$. Then $\max\limits_{F \subseteq E} \frac{v(F)}{u(F)} \leq k$, where $v(F)$ is the maximum size of independent subset in $F$ and $u(F)$ is the minimum size of maximal independent subset in $F$.
+    \end{theorem}
+ 
+   \begin{solution}
+   
+   	
+   	\qquad(a) Let $S=X\times Y\times Z$, and \textbf{C} is a collection of some certain sets. $A \in \textbf{C}$ iff the triples in $A$ are all disjoint each other, then  $A$ is an independent set and (S,\textbf{C}) is an independent system. (As for the proof, it is obvious that if we move a triple out others will still remain disjoint).
+   	
+   	(b)   	
+   	\begin{minipage}[t]{0.95\textwidth}
+   		\begin{algorithm}[H]
+   			\KwIn{The n triples, $c(i)$ }
+   			\KwOut{A correct collection  $\mathcal{F}$}
+   			
+   			\BlankLine
+   			\caption{Greedy-MAX2}\label{Alg_Quick}
+   			
+   			Sort the elements in $E$ by weight, so that $c(tri_1)>c(tri_2)>\cdots>c(tri_n) $ \;
+   			
+   			$\mathcal{F}\leftarrow \emptyset$\;
+   			\For{$j \leftarrow 1$ \KwTo $n$}{
+   				\If{$\mathcal{F}\cup{e_i}$ is compatible }{
+   					$\mathcal{F}=\mathcal{F}\cup{tri_j} $
+   				}
+   			}
+   			
+   			return $\mathcal{F}$\;
+   		\end{algorithm}
+   	\end{minipage}
+   
+   \qquad About more detailed implemention. We can create three hash-tables to record the existing $x,y$,and $z$ value. Then create a link-list to store the compatible triples. In line4, we will check wether new $x_j$ has been in the X-hash-table, and then the same to $y_j, z_j$. If compatible, we will add the new value to hash-table and add the triple to the storing list (line5). 
+   
+   	\qquad(c) We can let $X=Y=Z{1,2}$. Let the weight for (1,2,1) is 7, while (1,1,2) weighs 6 and (2,2,1) weighs 5. And let all other triples weight 0. Then, it is easy to see that the Greedy result weights 7, while the optimal one weighs 11.
+   
+   	\qquad(d) Let $E=X\times Y \times Z $. And there are three matroids: $(E,I_X),(E,I_Y),(E,I_Z)$, which means if $B\in I_X$, then every triple in $B$ has different x-value. 
+   
+   If we delete some triples in $B$ and form a subset $C$, then all triples in $C$ still have different x-values, which prove it is hereditary. If $|D|<|B|$, then there must be less x-values in $D$, we can just choose one triple $t$ whose x-value is not in $D$ but in $B$, then $D\cup\{t\}$ still have different x-values. So the exchange property is proved. 
+   
+   If $A_1 \in I_X, A_2 \in I_Y, A_3 \in I_Z $, and $A_1=A_2=A_3=A \in \bigcap_{i=1}^{3} \mathcal{I}_{i} $, then all triples in $A$ have different x,y,z-values so they are disjoint, which  meets the requirement.  
+   
+   Then $\mathcal{I}=\bigcap_{i=1}^{3} \mathcal{I}_{i}=\mathcal{F}$. Then $\max\limits_{F \subseteq E} \frac{v(F)}{u(F)} \leq k=3$. Therefore, the proposition is proved.
+   
+   
+   
+   
+   
+   
+   	\end{solution}
+ 
+ 
+
+
+
+	\item
+	\textbf{Crowdsourcing} is the process of obtaining needed services, ideas, or content by soliciting contributions from a large group of people, especially an online community. Suppose you want to form a team to complete a crowdsourcing task, and there are $n$ individuals to choose from. Each person $p_i$ can contribute $v_i$ ($v_i > 0$) to the team, but he/she can only work with up to $c_i$ other people. Now it is up to you to choose a certain group of people and maximize their total contributions ($\sum_i{v_i}$).
+	
+	\begin{enumerate}
+		\item Given $\text{OPT}(i, b, c)=$ maximum contributions when choosing from $\{p_1, p_2, \cdots, p_i\}$ with $b$ persons from $\{p_{i+1}, p_{i+2}, \cdots, p_n\}$ already on board and at most $c$ seats left before any of the existing team members gets uncomfortable. Describe the optimal substructure as we did in class and write a recurrence for $\text{OPT}(i, b, c)$.
+		\item Design an algorithm to form your team using dynamic programming, in the form of \emph{pseudo code}.
+        \item Analyze the time and space complexities of your design.
+	\end{enumerate}
+  
+  \begin{solution}
+  	~\\
+  	(a) To compute the $OPT(i,b,c)$, we should discuss some different cases. If $i=0$, then $OPT$ is 0. If $c=0$, we can not add the $p_i$ to the team, so the $OPT(i,b,c)=OPT(i-1,b,c)$.
+  	
+  	About others, we need to discuss two cases. 
+  	
+    $\bullet$ Case 1, OPT selects person-i.
+    
+    Let $c'_i=min\{c-1,c_i-b\}$, and set $c'_i$ as new c.
+    
+    Add the $v_i$, and selects best using \{1,2,...,i-1\} with this new c-limit.
+  	
+  $\bullet$ Case 2, OPT does not select person-i
+  	
+  	OPT selects best using \{1,2,...,i-1\} with  c-limit.
+  	
+  	
+ 
+  Then we can get:
+  
+  $OPT(i,b,c)=	\left\{\begin{array}{lcl} 
+  		0 & i=0 \;or\; c=0 \\
+  		OPT(i-1,b,c) & c_i<b\\
+  		max \{ OPT(i-1,b,c),v_i+OPT(i-1,b+1,c'_i)\} & otherwise
+  		
+  	\end{array} \right. $
+ 
+  	
+  
+  	
+  	
+  	(b) The code is presented in the next page.
+  		
+  	\begin{minipage}{0.9\textwidth}
+  		\begin{algorithm}[H]
+  			\BlankLine
+  			\caption{Crowd Sourcing}
+  			\KwIn{$n$, $\{v_1,v_2,\dots,v_n\}$, $\{c_1,c_2,\dots,c_n\}$}
+  			\KwOut{maximized $\sum\limits_{i}v_i$}
+  			
+  			\BlankLine
+  			
+  			Create $n^3$ int-space $f[i,b,c]$ to store the result, and make them empty at first.
+  			
+  			\BlankLine
+  			
+  			Def opt$(i,b,c)$:
+  			~\\
+  			opt$(i,b,c)$\{
+  			
+  				\If{$f[i,b,c]\neq empty$}{\textbf{return} $f[i,b,c]$\;}\
+  				\If{$i=0$ or $c=0$}{$f[i,b,c]\leftarrow 0$}
+  				\Else{
+  					\If{$c_i<b$}{$f[i,b,c]\leftarrow opt(i-1,b,c)$\;}
+  					
+  					
+  					\Else{$c'\leftarrow\min\{c_i-b,c-1\}$\;
+  						$f[i,b,c]\leftarrow\max\{opt(i-1,b,c),v_i+opt(i-1,b+1,c')\}$\;
+  					}
+  				}
+  				\textbf{return} $f[i,b,c]$\;
+  		   	\}
+  			\BlankLine
+  			\textbf{output} opt$(n,0,n)$\;
+  		\end{algorithm}
+  		
+  	\end{minipage}
+  	
+  	(c) The space complexity is obviously $O(n^3)$.
+  	
+  	Then about the time complexity: 
+  	In line1, we should empty the space, whose time-complexity is due to the datasture. And we assume it is $g(n)$ ($g(n)$$\leq$$O(n^3)$)
+  	
+  	Beacuase calculating the $opt(n,0,n)$ needn't to solve all elements in $f[i,b,c]$, we just use the memorization method instead of bottom-up one. By doing this, however, the time complexity will still be expressed as $O(n^3)$. 
+  	
+  	Therefore, both the time and space complexities are $O(n^3)$.
+  	
+  	
+  \end{solution}
+
+
+
+
+
+
+
+
+
+
+
+\end{enumerate}
+
+\vspace{20pt}
+
+\textbf{Remark:} You need to include your .pdf and .tex files in your uploaded .rar or .zip file.
+
+%========================================================================
+\end{document}
